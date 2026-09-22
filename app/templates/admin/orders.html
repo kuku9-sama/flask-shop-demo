@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}订单管理 - Flask 商城{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-receipt"></i> 订单管理</h2>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.products') }}">
+            <i class="bi bi-box-seam"></i> 商品管理
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('admin.orders') }}">
+            <i class="bi bi-receipt"></i> 订单管理
+        </a>
+    </li>
+</ul>
+
+{% if orders %}
+{% for order in orders %}
+<div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <strong>订单 #{{ order.id }}</strong>
+            <small class="text-muted ms-2">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            <span class="ms-2 text-muted">| 用户：{{ order.user.username }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="fw-bold text-danger">¥{{ "%.2f"|format(order.total_amount) }}</span>
+            <form method="POST" action="{{ url_for('admin.update_order_status', order_id=order.id) }}"
+                  class="d-flex gap-1">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select name="status" class="form-select form-select-sm" style="width: auto;">
+                    {% for value, label in status_labels.items() %}
+                    <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-primary">更新</button>
+            </form>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td class="text-nowrap">¥{{ "%.2f"|format(item.price) }} × {{ item.quantity }}</td>
+                    <td class="text-end text-nowrap">¥{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer text-muted small">
+        <i class="bi bi-geo-alt"></i> {{ order.shipping_address }}
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-receipt"></i>
+    <h4>暂无订单</h4>
+    <p>还没有用户下单</p>
+</div>
+{% endif %}
+{% endblock %}

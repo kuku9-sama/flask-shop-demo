@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}商品管理 - Flask 商城{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-gear"></i> 商品管理</h2>
+    <a href="{{ url_for('admin.new_product') }}" class="btn btn-success">
+        <i class="bi bi-plus-lg"></i> 添加商品
+    </a>
+</div>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('admin.products') }}">
+            <i class="bi bi-box-seam"></i> 商品管理
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.orders') }}">
+            <i class="bi bi-receipt"></i> 订单管理
+        </a>
+    </li>
+</ul>
+
+{% if products %}
+<div class="table-responsive">
+    <table class="table table-hover admin-table align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>图片</th>
+                <th>名称</th>
+                <th>分类</th>
+                <th>价格</th>
+                <th>库存</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>
+                    <img src="{{ product.image_url or url_for('static', filename='images/placeholder.svg') }}"
+                         alt="{{ product.name }}"
+                         onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/placeholder.svg') }}'">
+                </td>
+                <td>
+                    <a href="{{ url_for('shop.product_detail', product_id=product.id) }}" target="_blank"
+                       class="text-decoration-none">{{ product.name }}</a>
+                </td>
+                <td><span class="badge bg-secondary">{{ product.category or '未分类' }}</span></td>
+                <td class="fw-bold">¥{{ "%.2f"|format(product.price) }}</td>
+                <td>
+                    {% if product.stock > 10 %}
+                    <span class="text-success">{{ product.stock }}</span>
+                    {% elif product.stock > 0 %}
+                    <span class="text-warning">{{ product.stock }}</span>
+                    {% else %}
+                    <span class="text-danger">0</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if product.is_active %}
+                    <span class="badge bg-success">上架中</span>
+                    {% else %}
+                    <span class="badge bg-secondary">已下架</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('admin.edit_product', product_id=product.id) }}"
+                       class="btn btn-sm btn-outline-primary" title="编辑">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('admin.delete_product', product_id=product.id) }}"
+                          class="d-inline"
+                          onsubmit="return confirm('确定要删除商品“{{ product.name }}”吗？')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="删除">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-inbox"></i>
+    <h4>暂无商品</h4>
+    <p>点击上方“添加商品”按钮添加第一个商品</p>
+</div>
+{% endif %}
+{% endblock %}

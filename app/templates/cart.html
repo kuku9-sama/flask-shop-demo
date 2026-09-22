@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}购物车 - Flask 商城{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-cart3"></i> 我的购物车</h2>
+
+{% if cart_items %}
+<div class="table-responsive">
+    <table class="table table-hover cart-table align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>商品</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>小计</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="{{ item.product.image_url or url_for('static', filename='images/placeholder.svg') }}"
+                             alt="{{ item.product.name }}"
+                             onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/placeholder.svg') }}'">
+                        <a href="{{ url_for('shop.product_detail', product_id=item.product.id) }}"
+                           class="text-decoration-none fw-bold">{{ item.product.name }}</a>
+                    </div>
+                </td>
+                <td class="text-nowrap">¥{{ "%.2f"|format(item.product.price) }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('shop.update_cart', item_id=item.id) }}"
+                          class="d-flex align-items-center gap-1">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="number" name="quantity" value="{{ item.quantity }}"
+                               min="1" max="{{ item.product.stock }}"
+                               class="form-control form-control-sm quantity-input">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="更新数量">
+                            <i class="bi bi-check"></i>
+                        </button>
+                    </form>
+                </td>
+                <td class="fw-bold text-nowrap">¥{{ "%.2f"|format(item.product.price * item.quantity) }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('shop.remove_from_cart', item_id=item.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('确定要移除该商品吗？')">
+                            <i class="bi bi-trash"></i> 移除
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <span class="text-muted">共 {{ cart_items|length }} 种商品</span>
+            <span class="ms-3 fs-5">合计：<span class="checkout-total">¥{{ "%.2f"|format(total) }}</span></span>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('shop.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> 继续购物
+            </a>
+            <a href="{{ url_for('shop.checkout') }}" class="btn btn-danger btn-lg">
+                <i class="bi bi-credit-card"></i> 去结算
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-cart-x"></i>
+    <h4>购物车是空的</h4>
+    <p>快去挑选心仪的商品吧</p>
+    <a href="{{ url_for('shop.index') }}" class="btn btn-primary">
+        <i class="bi bi-grid"></i> 去逛逛
+    </a>
+</div>
+{% endif %}
+{% endblock %}

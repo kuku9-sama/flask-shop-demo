@@ -1,0 +1,148 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-card .card-img-top {
+    height: 220px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+}
+
+.product-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card .product-price {
+    color: #e74c3c;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.product-card .product-category {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.product-detail-img {
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f8f9fa;
+}
+
+.cart-table img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.cart-table .quantity-input {
+    width: 70px;
+    text-align: center;
+}
+
+.checkout-total {
+    font-size: 1.5rem;
+    color: #e74c3c;
+    font-weight: 700;
+}
+
+.badge-pending { background-color: #ffc107; color: #000; }
+.badge-paid { background-color: #17a2b8; color: #fff; }
+.badge-shipped { background-color: #007bff; color: #fff; }
+.badge-completed { background-color: #28a745; color: #fff; }
+.badge-cancelled { background-color: #dc3545; color: #fff; }
+
+.category-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-right: 6px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    background-color: #e9ecef;
+    color: #495057;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.category-badge:hover,
+.category-badge.active {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.footer {
+    background-color: #343a40;
+    color: #adb5bd;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+.admin-table img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.search-box {
+    max-width: 400px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@media (max-width: 768px) {
+    .product-card .card-img-top {
+        height: 180px;
+    }
+
+    .cart-table img {
+        width: 60px;
+        height: 60px;
+    }
+}

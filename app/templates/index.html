@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - Flask 商城{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <h2 class="mb-0"><i class="bi bi-grid"></i> 全部商品</h2>
+    <form method="GET" action="{{ url_for('shop.index') }}" class="search-box">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="搜索商品..." value="{{ search }}">
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if categories %}
+<div class="mb-4">
+    <a href="{{ url_for('shop.index') }}"
+       class="category-badge {% if not current_category %}active{% endif %}">全部</a>
+    {% for cat in categories %}
+    <a href="{{ url_for('shop.index', category=cat) }}"
+       class="category-badge {% if current_category == cat %}active{% endif %}">{{ cat }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if products %}
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for product in products %}
+    <div class="col fade-in">
+        <div class="card product-card shadow-sm">
+            <a href="{{ url_for('shop.product_detail', product_id=product.id) }}">
+                <img src="{{ product.image_url or url_for('static', filename='images/placeholder.svg') }}"
+                     class="card-img-top" alt="{{ product.name }}"
+                     onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/placeholder.svg') }}'">
+            </a>
+            <div class="card-body">
+                {% if product.category %}
+                <span class="product-category mb-1">{{ product.category }}</span>
+                {% endif %}
+                <h5 class="card-title mt-1">
+                    <a href="{{ url_for('shop.product_detail', product_id=product.id) }}"
+                       class="text-decoration-none text-dark">{{ product.name }}</a>
+                </h5>
+                <p class="card-text text-muted small flex-grow-1">
+                    {{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}
+                </p>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <span class="product-price">¥{{ "%.2f"|format(product.price) }}</span>
+                    {% if current_user.is_authenticated %}
+                    <form method="POST" action="{{ url_for('shop.add_to_cart', product_id=product.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="bi bi-cart-plus"></i> 加入购物车
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">登录后购买</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-inbox"></i>
+    <h4>暂无商品</h4>
+    <p>
+        {% if search %}
+        未找到与“{{ search }}”相关的商品
+        {% elif current_category %}
+        分类“{{ current_category }}”下暂无商品
+        {% else %}
+        还没有上架任何商品
+        {% endif %}
+    </p>
+</div>
+{% endif %}
+{% endblock %}
